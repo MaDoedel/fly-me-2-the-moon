@@ -1,4 +1,5 @@
 import * as React from "react"
+import $ from 'jquery';
 
 
 function MyHeader() {
@@ -8,7 +9,7 @@ function MyHeader() {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           {/* <link rel="icon" type="image/x-icon" href="favicon.ico"></link> */}
           <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
           <title>Fly me to the moon</title>
     </head>
   );
@@ -102,6 +103,36 @@ function UserInput() {
   );
 }
 
+function FlightsOutput() {
+  const [error, setError] = React.useState(null);
+  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [items, setItems] = React.useState([]);  
+
+  // don't have cors permission
+
+  function handleClick() {
+    $.ajax({
+      url: 'https://www.ryanair.com/api/booking/v4/en-gb/availability?ADT=1&TEEN=0&CHD=0&INF=0&Origin=BER&Destination=MRS&promoCode=&IncludeConnectingFlights=false&DateOut=2024-08-25&DateIn=&FlexDaysBeforeOut=2&FlexDaysOut=2&FlexDaysBeforeIn=2&FlexDaysIn=2&RoundTrip=false&ToUs=AGREED',
+      type: 'GET',
+      dataType: 'json',
+      cors: true ,
+      timeout: 5000,
+      success: function(data) {
+        setIsLoaded(true);
+        setItems(data);
+      },
+      error: function(error) {
+        setIsLoaded(true);
+        setError(error);
+        console.log(error);
+      }
+    });
+  }
+
+  return (
+    <button class="w3-button w3-blue" onClick={handleClick}>Get Flights</button>
+  );
+}
 
 export default function IndexPage() {
   const [dates, setDates] = React.useState([{id: 1, date: 'same date'}]);
@@ -110,6 +141,7 @@ export default function IndexPage() {
     <> <main>
       <MyHeader />
       <MyBody dates={dates} setDates={setDates}/>
+      <FlightsOutput />
     </main>
     </>
   )
